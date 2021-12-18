@@ -15,47 +15,54 @@ operations=[
     lambda x: 1 if x[0] == x[1] else 0
 ]
 
+class BitStringReader:
+    def __init__(self, s):
+        self.s = s
+
+    def extract(self, n):
+        r = self.s[:n]
+        self.s = self.s[n:]
+        return(r)
+
+    def read(self, n):
+        return(int(self.extract(n),2))
+
+    def eof(self):
+        return(len(self.s) == 0)
+
 def packetdecode(b):
     value = 0
-    versionsum=int(b[0:3],2)
-    b=b[3:]
-    type=int(b[0:3],2)
-    b=b[3:]
+    versionsum=b.read(3)
+    type=b.read(3)
     if type==4:
         #literal decoding
         lastseen = False
         while not lastseen:
-            lastseen = b[0] == "0"
-            b=b[1:]
-            value=value*16+int(b[0:4],2)
-            b=b[4:]
+            lastseen = b.read(1) == 0
+            value=value*16+b.read(4)
     else:
         subvalues = []
-        id = b[0]
-        b = b[1:]
-        if id == "0" :
-            l = int(b[0:15],2)
-            b = b[15:]
-            subb = b[0:l]
-            b = b[l:]
-            while subb:
-                subb, subversionsum, subvalue = packetdecode(subb)
+        id = b.read(1)
+        if id == 0 :
+            l = b.read(15)
+            subb = BitStringReader(b.extract(l))
+            while not subb.eof():
+                subversionsum, subvalue = packetdecode(subb)
                 versionsum+=subversionsum
                 subvalues.append(subvalue)
         else:
-            p = int(b[0:11],2)
-            b = b[11:]
+            p = b.read(11)
             for _ in range(p):
-                b, subversionsum, subvalue = packetdecode(b)
+                subversionsum, subvalue = packetdecode(b)
                 versionsum+=subversionsum
                 subvalues.append(subvalue)
         value = operations[type](subvalues)
-    return(b, versionsum, value)
+    return(versionsum, value)
 
 def decode(h):
     bitlen=str(len(h)*4)
     fmt = "{:0"+bitlen+"b}"
-    b=fmt.format(int(h,16))
+    b=BitStringReader(fmt.format(int(h,16)))
     return(packetdecode(b))
 
 # explanation examples
