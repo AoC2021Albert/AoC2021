@@ -4,28 +4,28 @@ import sys
 import math
 from collections import defaultdict
 
-xinitial=20
-xfinal=30
+xinitial = 20
+xfinal = 30
 
-yinitial=-5
-yfinal=-10
+yinitial = -5
+yfinal = -10
 
 maxy = 9
 
-xinitial=185
-xfinal=221
+xinitial = 185
+xfinal = 221
 
-yinitial=-74
-yfinal=-122
+yinitial = -74
+yfinal = -122
 
 maxy = -yfinal
 
-#p1
-print( -yfinal * (-yfinal - 1) - ( ( -yfinal ) * (( -yfinal ) - 1) // 2 ))
+# p1
+print(-yfinal * (-yfinal - 1) - ((-yfinal) * ((-yfinal) - 1) // 2))
 
 p2 = 0
 for ivx in range(xfinal+1):
-    for ivy in range(yfinal,maxy+1):
+    for ivy in range(yfinal, maxy+1):
         x = 0
         y = 0
         dx = ivx
@@ -38,8 +38,10 @@ for ivx in range(xfinal+1):
             if x >= xinitial and x <= xfinal and y <= yinitial and y >= yfinal:
                 hit = True
             else:
-                if dx > 0: dx -= 1
+                if dx > 0:
+                    dx -= 1
                 dy -= 1
-        if hit: p2+=1
+        if hit:
+            p2 += 1
 
 print(p2)

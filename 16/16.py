@@ -4,7 +4,7 @@ import sys
 import math
 from collections import defaultdict
 
-operations=[
+operations = [
     sum,
     math.prod,
     min,
@@ -14,6 +14,7 @@ operations=[
     lambda x: 1 if x[0] < x[1] else 0,
     lambda x: 1 if x[0] == x[1] else 0
 ]
+
 
 class BitStringReader:
     def __init__(self, s):
@@ -25,45 +26,48 @@ class BitStringReader:
         return(r)
 
     def read(self, n):
-        return(int(self.extract(n),2))
+        return(int(self.extract(n), 2))
 
     def eof(self):
         return(len(self.s) == 0)
 
+
 def packetdecode(b):
     value = 0
-    versionsum=b.read(3)
-    type=b.read(3)
-    if type==4:
-        #literal decoding
+    versionsum = b.read(3)
+    type = b.read(3)
+    if type == 4:
+        # literal decoding
         lastseen = False
         while not lastseen:
             lastseen = b.read(1) == 0
-            value=value*16+b.read(4)
+            value = value*16+b.read(4)
     else:
         subvalues = []
         id = b.read(1)
-        if id == 0 :
+        if id == 0:
             l = b.read(15)
             subb = BitStringReader(b.extract(l))
             while not subb.eof():
                 subversionsum, subvalue = packetdecode(subb)
-                versionsum+=subversionsum
+                versionsum += subversionsum
                 subvalues.append(subvalue)
         else:
             p = b.read(11)
             for _ in range(p):
                 subversionsum, subvalue = packetdecode(b)
-                versionsum+=subversionsum
+                versionsum += subversionsum
                 subvalues.append(subvalue)
         value = operations[type](subvalues)
     return(versionsum, value)
 
+
 def decode(h):
-    bitlen=str(len(h)*4)
+    bitlen = str(len(h)*4)
     fmt = "{:0"+bitlen+"b}"
-    b=BitStringReader(fmt.format(int(h,16)))
+    b = BitStringReader(fmt.format(int(h, 16)))
     return(packetdecode(b))
+
 
 # explanation examples
 print(decode("D2FE28"))
