@@ -21,19 +21,19 @@ while moved:
     newmap = copy.deepcopy(map)
     for y in range(H):
         for x in range(W):
-            if map[y][x] == ">" and map[y][(x+1)%W]==".":
+            if map[y][x] == ">" and map[y][(x+1) % W] == ".":
                 newmap[y][x] = "."
-                newmap[y][(x+1)%W]=">"
+                newmap[y][(x+1) % W] = ">"
                 moved = True
     map = newmap
     newmap = copy.deepcopy(map)
     for y in range(H):
         for x in range(W):
-            if map[y][x] == "v" and map[(y+1)%H][x]==".":
+            if map[y][x] == "v" and map[(y+1) % H][x] == ".":
                 newmap[y][x] = "."
-                newmap[(y+1)%H][x]="v"
+                newmap[(y+1) % H][x] = "v"
                 moved = True
     map = newmap
-    #print(map)
+    # print(map)
     loop += 1
 print(loop)
